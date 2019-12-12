@@ -1,0 +1,43 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  input(id="imagelist", type="file")
+  button(id="start") 上传
+  div
+    img(id="test1") 
+  script(src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js")
+  script.
+    var OL_Action_Root = "http://localhost:3000";
+    $(function(){
+      $('#start').click(function(){
+        Req_ajax();
+      });
+    })
+    function Req_ajax()
+    {           
+        
+        console.log($("#imagelist")[0].files)
+        // 获取file域里的图片信息
+        var formData = new FormData()
+        //创建formdata对象
+        formData.append("test",$("#imagelist")[0].files[0])  
+        // 将文件信息 append 进入formdata对象  key值 为后台 single 设置的值  
+        $.ajax({
+            url: '/upload/img',
+            type: 'POST',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data){
+              if (data.code==200) {
+                  $('#test1').attr('src',data.url)
+              }
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                document.getElementById("status").innerHTML = "<span style='color:#EF0000'>连接不到服务器，请检查网络！</span>";
+            }
+        });
+    }
